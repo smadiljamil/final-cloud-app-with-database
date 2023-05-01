@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
 # <HINT> Import any new Models here
-from .models import Course, Enrollment, Submission, Choice
+from .models import Course, Enrollment, Submission, Choice, Question
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse
@@ -150,18 +150,15 @@ def show_exam_result(request, course_id, submission_id):
     score = 0
     total_questions_grade = 0
     current_max = 0
-    
-    QuestionList = []
 
     # Get Total correct answer
     for i in submit.choices.all():
         if(i.is_correct):
             score += 1   
-        QuestionList.append(i.question_id)
     
     # Summation of Max Grade
-    for q in set(QuestionList):
-        total_questions_grade += q.grade
+    for question in course.question_set.all():
+        total_questions_grade += question.grade
 
     context['selected'] = selected
     context['grade'] = int(score/total_questions_grade * 100)
